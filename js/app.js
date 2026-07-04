@@ -9,6 +9,16 @@
   let hotspotsVisible = true;
   let selectedId = null;
 
+  function parseSelectedId(raw) {
+    if (!raw) return { type: null, id: null };
+    const sep = raw.indexOf('-');
+    if (sep === -1) return { type: raw, id: null };
+    return {
+      type: raw.slice(0, sep),
+      id: raw.slice(sep + 1)
+    };
+  }
+
   function getRiskColor(level) {
     const r = RISK_LEVELS.find(l => l.level === level);
     return r ? r.color : '#8b95a8';
@@ -77,7 +87,8 @@
       zoomControl: false
     });
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    const zoomPos = window.innerWidth <= 900 ? 'bottomleft' : 'bottomright';
+    L.control.zoom({ position: zoomPos }).addTo(map);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
@@ -117,6 +128,7 @@
 
         renderHotspots();
         hideLoader();
+        requestAnimationFrame(() => map.invalidateSize());
       })
       .catch(err => {
         console.error(err);
@@ -205,13 +217,14 @@
 
     if (type === 'municipio') {
       showMunicipioDetail(id);
-      closePanelOnMobile();
+      openPanelOnMobile();
     } else {
       const spot = HOTSPOTS.find(h => h.id === id);
       if (spot) {
         showHotspotDetail(spot);
-        map.setView([spot.lat, spot.lng], 14, { animate: true });
-        closePanelOnMobile();
+        const zoom = window.innerWidth <= 600 ? 13 : 14;
+        map.setView([spot.lat, spot.lng], zoom, { animate: true });
+        openPanelOnMobile();
       }
     }
   }
@@ -291,7 +304,7 @@
           <span class="detail__risk-dot" style="background:${color}"></span>
           Rischio: ${getRiskLabel(spot.risk)}
         </div>
-        <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.45">${spot.desc}</p>
+        <p class="detail__desc">${spot.desc}</p>
         ${renderBorseggiatriciHtml(spot.borseggiatrici)}
         ${renderOrariHtml(spot.orari)}
         <div class="detail__crimes">${crimesHtml}</div>
@@ -317,9 +330,9 @@
     });
     refreshMunicipiStyles();
     if (selectedId) {
-      const [type, id] = selectedId.split('-');
+      const { type, id } = parseSelectedId(selectedId);
       if (type === 'municipio') showMunicipioDetail(Number(id));
-      else {
+      else if (type === 'hotspot') {
         const spot = HOTSPOTS.find(h => h.id === id);
         if (spot) showHotspotDetail(spot);
       }
@@ -378,7 +391,9 @@
 
   function initMobilePanel() {
     const toggle = document.getElementById('panelToggle');
+    const closeBtn = document.getElementById('panelClose');
     const panel = document.getElementById('sidePanel');
+    const MQ_MOBILE = window.matchMedia('(max-width: 900px)');
 
     let overlay = document.querySelector('.panel-overlay');
     if (!overlay) {
@@ -391,25 +406,56 @@
       panel.classList.remove('panel--open');
       overlay.classList.remove('panel-overlay--visible');
       toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('panel-open');
+      requestAnimationFrame(() => map?.invalidateSize());
     }
 
     function open() {
+      if (!MQ_MOBILE.matches) return;
       panel.classList.add('panel--open');
       overlay.classList.add('panel-overlay--visible');
       toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('panel-open');
+      requestAnimationFrame(() => {
+        map?.invalidateSize();
+        panel.querySelector('.panel__section--grow')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
     }
 
     toggle.addEventListener('click', () => {
       panel.classList.contains('panel--open') ? close() : open();
     });
+    closeBtn?.addEventListener('click', close);
     overlay.addEventListener('click', close);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && panel.classList.contains('panel--open')) close();
+    });
+
+    MQ_MOBILE.addEventListener('change', e => {
+      if (!e.matches) close();
+      requestAnimationFrame(() => map?.invalidateSize());
+    });
+
+    window.openPanelOnMobile = open;
     window.closePanelOnMobile = close;
   }
 
-  function closePanelOnMobile() {
-    if (window.innerWidth <= 900 && window.closePanelOnMobile) {
-      window.closePanelOnMobile();
+  function openPanelOnMobile() {
+    if (window.innerWidth <= 900 && window.openPanelOnMobile) {
+      window.openPanelOnMobile();
     }
+  }
+
+  function initResizeHandler() {
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => map?.invalidateSize(), 150);
+    });
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => map?.invalidateSize(), 300);
+    });
   }
 
   function hideLoader() {
@@ -422,6 +468,7 @@
     initStats();
     initControls();
     initMobilePanel();
+    initResizeHandler();
     initMap();
   });
 })();
