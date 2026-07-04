@@ -459,7 +459,10 @@
   }
 
   function hideLoader() {
-    document.getElementById('mapLoader').classList.add('map-loader--hidden');
+    const loader = document.getElementById('mapLoader');
+    loader.classList.add('map-loader--hidden');
+    loader.setAttribute('aria-hidden', 'true');
+    setTimeout(() => loader.setAttribute('hidden', ''), 320);
   }
 
   document.addEventListener('DOMContentLoaded', () => {

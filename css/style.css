@@ -118,16 +118,17 @@ a:hover { text-decoration: underline; }
 .panel {
   width: var(--panel-w);
   max-width: 100%;
+  height: 100%;
   background: var(--bg-panel);
   border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
+  display: block;
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
   z-index: 960;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  isolation: isolate;
 }
 
 .panel__header {
@@ -167,16 +168,28 @@ a:hover { text-decoration: underline; }
 .panel__section {
   padding: 1.125rem 1.25rem;
   border-bottom: 1px solid var(--border);
+  position: relative;
+  background: var(--bg-panel);
 }
 
 .panel__section--grow {
-  flex: 1;
-  min-height: 0;
+  /* nessun flex-shrink: il pannello scorre tutto insieme */
 }
 
 .detail {
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.detail__content > * + * {
+  margin-top: 0;
+}
+
+.detail__content .detail__crimes,
+.detail__content .detail__borseggiatrici,
+.detail__content .detail__orari,
+.detail__content .detail__tips {
+  margin-top: 1rem;
 }
 .panel__section--stats { padding: 0.875rem 1.25rem; }
 
@@ -303,10 +316,10 @@ a:hover { text-decoration: underline; }
 .detail__crimes { display: flex; flex-direction: column; gap: 0.625rem; }
 
 .detail__crime {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 0.625rem;
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+  gap: 0.25rem 0.625rem;
+  align-items: start;
   padding: 0.625rem 0.75rem;
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -314,18 +327,22 @@ a:hover { text-decoration: underline; }
 }
 
 .detail__crime-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
   font-size: 1.125rem;
-  line-height: 1;
-  flex-shrink: 0;
-  margin-top: 1px;
+  line-height: 1.3;
 }
 
-.detail__crime-info { flex: 1; min-width: 0; }
+.detail__crime-info {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-width: 0;
+}
 
 .detail__crime-name {
   font-size: 0.8125rem;
   font-weight: 600;
-  margin-bottom: 2px;
+  margin-bottom: 0.25rem;
 }
 
 .detail__crime-desc {
@@ -335,12 +352,15 @@ a:hover { text-decoration: underline; }
 }
 
 .detail__crime-level {
+  grid-column: 3;
+  grid-row: 1;
   font-family: var(--mono);
   font-size: 0.6875rem;
   font-weight: 500;
   padding: 2px 6px;
   border-radius: 4px;
-  flex-shrink: 0;
+  white-space: nowrap;
+  align-self: start;
 }
 
 .detail__borseggiatrici {
@@ -563,6 +583,10 @@ a:hover { text-decoration: underline; }
   flex: 1;
   position: relative;
   min-width: 0;
+  min-height: 0;
+  isolation: isolate;
+  z-index: 1;
+  overflow: hidden;
 }
 
 #map {
@@ -615,7 +639,12 @@ a:hover { text-decoration: underline; }
 
 .map-loader--hidden {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
+}
+
+.map-loader[hidden] {
+  display: none !important;
 }
 
 .map-loader__spinner {
@@ -635,7 +664,20 @@ a:hover { text-decoration: underline; }
 }
 
 /* Leaflet overrides */
-.leaflet-container { font-family: var(--font); }
+.leaflet-container {
+  font-family: var(--font);
+  z-index: 0;
+}
+
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: auto;
+}
+
+.leaflet-control {
+  z-index: 5;
+}
 
 .leaflet-popup-content-wrapper {
   background: var(--bg-panel);
@@ -797,13 +839,18 @@ a:hover { text-decoration: underline; }
   .detail__name { font-size: 1.125rem; }
 
   .detail__crime {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
   }
 
   .detail__crime-level {
-    align-self: flex-start;
-    margin-top: 0.25rem;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    margin-top: 0.125rem;
+  }
+
+  .detail__crime-info {
+    grid-row: 1;
   }
 
   .stats {
