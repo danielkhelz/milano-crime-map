@@ -25,6 +25,34 @@
     return crime ? crime.level : data.risk;
   }
 
+  function renderOrariHtml(orari) {
+    if (!orari?.fasce?.length) return '';
+
+    const fasceHtml = orari.fasce.map(f => {
+      const color = getRiskColor(f.livello);
+      return `
+        <div class="orari__fascia">
+          <div class="orari__fascia-header">
+            <span class="orari__giorni">${f.giorni}</span>
+            <span class="orari__badge" style="background:${color}22;color:${color}">${getRiskLabel(f.livello)}</span>
+          </div>
+          <div class="orari__time">${f.da} — ${f.a}</div>
+          <div class="orari__nota">${f.nota}</div>
+        </div>`;
+    }).join('');
+
+    const preferibile = orari.preferibile
+      ? `<div class="orari__preferibile"><span class="orari__preferibile-icon">✓</span> Meglio uscire: <strong>${orari.preferibile}</strong></div>`
+      : '';
+
+    return `
+      <div class="detail__orari">
+        <div class="detail__orari-title">Orari sconsigliati</div>
+        <div class="orari__list">${fasceHtml}</div>
+        ${preferibile}
+      </div>`;
+  }
+
   function initMap() {
     map = L.map('map', {
       center: MILAN_CENTER,
@@ -134,9 +162,14 @@
 
       const marker = L.marker([spot.lat, spot.lng], { icon });
 
+      const orarioBreve = spot.orari?.fasce?.[0]
+        ? `<div class="popup__orari">⏰ Evitare: ${spot.orari.fasce[0].da} — ${spot.orari.fasce[0].a}</div>`
+        : '';
+
       marker.bindPopup(
         `<div class="popup__title">${spot.name}</div>` +
         `<div class="popup__risk">Rischio: ${getRiskLabel(spot.risk)}</div>` +
+        orarioBreve +
         `<p style="margin-top:6px">${spot.desc}</p>`
       );
 
@@ -200,6 +233,7 @@
           Rischio ${activeFilter === 'all' ? 'complessivo' : 'filtrato'}: ${getRiskLabel(risk)}
         </div>
         <div class="detail__crimes">${crimesHtml}</div>
+        ${renderOrariHtml(data.orari)}
         <div class="detail__tips">
           <div class="detail__tips-title">Consigli</div>
           <p>${data.tips}</p>
@@ -236,6 +270,7 @@
           Rischio: ${getRiskLabel(spot.risk)}
         </div>
         <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.45">${spot.desc}</p>
+        ${renderOrariHtml(spot.orari)}
         <div class="detail__crimes">${crimesHtml}</div>
       </div>`;
   }
