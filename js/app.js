@@ -25,6 +25,23 @@
     return crime ? crime.level : data.risk;
   }
 
+  function renderBorseggiatriciHtml(info) {
+    if (!info) return '';
+
+    const zoneList = info.zone?.map(z => `<li>${z}</li>`).join('') || '';
+    const orari = info.orari
+      ? `<div class="borseggiatrici__orari">⏰ Orari più critici: <strong>${info.orari}</strong></div>`
+      : '';
+
+    return `
+      <div class="detail__borseggiatrici">
+        <div class="detail__borseggiatrici-title">Borseggiatrici segnalate</div>
+        <p class="borseggiatrici__nota">${info.nota}</p>
+        ${zoneList ? `<ul class="borseggiatrici__zone">${zoneList}</ul>` : ''}
+        ${orari}
+      </div>`;
+  }
+
   function renderOrariHtml(orari) {
     if (!orari?.fasce?.length) return '';
 
@@ -165,10 +182,14 @@
       const orarioBreve = spot.orari?.fasce?.[0]
         ? `<div class="popup__orari">⏰ Evitare: ${spot.orari.fasce[0].da} — ${spot.orari.fasce[0].a}</div>`
         : '';
+      const borseggioBreve = spot.borseggiatrici
+        ? `<div class="popup__borseggiatrici">👜 Borseggiatrici attive in zona</div>`
+        : '';
 
       marker.bindPopup(
         `<div class="popup__title">${spot.name}</div>` +
         `<div class="popup__risk">Rischio: ${getRiskLabel(spot.risk)}</div>` +
+        borseggioBreve +
         orarioBreve +
         `<p style="margin-top:6px">${spot.desc}</p>`
       );
@@ -233,6 +254,7 @@
           Rischio ${activeFilter === 'all' ? 'complessivo' : 'filtrato'}: ${getRiskLabel(risk)}
         </div>
         <div class="detail__crimes">${crimesHtml}</div>
+        ${renderBorseggiatriciHtml(data.borseggiatrici)}
         ${renderOrariHtml(data.orari)}
         <div class="detail__tips">
           <div class="detail__tips-title">Consigli</div>
@@ -270,6 +292,7 @@
           Rischio: ${getRiskLabel(spot.risk)}
         </div>
         <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.45">${spot.desc}</p>
+        ${renderBorseggiatriciHtml(spot.borseggiatrici)}
         ${renderOrariHtml(spot.orari)}
         <div class="detail__crimes">${crimesHtml}</div>
       </div>`;

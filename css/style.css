@@ -277,6 +277,67 @@ a:hover { text-decoration: underline; }
   flex-shrink: 0;
 }
 
+.detail__borseggiatrici {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  border-radius: var(--radius);
+}
+
+.detail__borseggiatrici-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #eab308;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.detail__borseggiatrici-title::before {
+  content: '👜';
+  font-size: 0.875rem;
+}
+
+.borseggiatrici__nota {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 0.5rem;
+}
+
+.borseggiatrici__zone {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.borseggiatrici__zone li {
+  font-size: 0.75rem;
+  color: var(--text);
+  padding-left: 0.875rem;
+  position: relative;
+}
+
+.borseggiatrici__zone li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #eab308;
+}
+
+.borseggiatrici__orari {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.borseggiatrici__orari strong { color: #eab308; }
+
 .detail__orari {
   margin-top: 1rem;
   padding: 0.75rem;
@@ -523,6 +584,7 @@ a:hover { text-decoration: underline; }
 .popup__title { font-weight: 700; font-size: 0.9375rem; margin-bottom: 0.25rem; }
 .popup__risk { font-size: 0.75rem; color: var(--text-muted); }
 .popup__orari { font-size: 0.75rem; color: #f97316; margin-top: 4px; font-weight: 500; }
+.popup__borseggiatrici { font-size: 0.75rem; color: #eab308; margin-top: 4px; font-weight: 600; }
 
 .leaflet-control-zoom a {
   background: var(--bg-panel) !important;

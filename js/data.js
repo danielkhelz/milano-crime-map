@@ -32,18 +32,24 @@ const MUNICIPI_DATA = {
   1: {
     risk: 3,
     crimes: {
-      furti: { level: 4, desc: 'Furti con destrezza e nei negozi, soprattutto in zona Duomo e Brera. Milano è 1ª in Italia per furti con destrezza.' },
+      furti: { level: 4, desc: 'Furti con destrezza e nei negozi. Presenza attiva di borseggiatrici in zona Duomo, Galleria e Castello Sforzesco. Milano è 1ª in Italia per furti con destrezza.' },
       rapine: { level: 3, desc: 'Rapine moderate in aree turistiche e nelle ore serali.' },
       spaccio: { level: 2, desc: 'Presenza limitata, concentrata in alcune vie periferiche del municipio.' },
       violenza: { level: 2, desc: 'Incidenza contenuta rispetto alla media cittadina.' },
       danneggiamenti: { level: 3, desc: 'Vandalismo e danneggiamenti in aree di movida.' },
       truffe: { level: 3, desc: 'Truffe a turisti e schema del cordone.' }
     },
-    tips: 'Attenzione a borse e telefoni in zona Duomo, Galleria e Brera. Evitare vicoli isolati di notte.',
+    tips: 'Borseggiatrici attive a Duomo, Galleria e Castello Sforzesco: borsa davanti, zaino chiuso, telefono non in tasca posteriore. Evitare vicoli isolati di notte.',
+    borseggiatrici: {
+      zone: ['Duomo — Piazza e Galleria', 'Castello Sforzesco — Parco e ingresso'],
+      nota: 'Squadre di borseggiatrici sfruttano l\'affollamento turistico. Avvicinamento con mappe, giornali o distrazioni di gruppo.',
+      orari: '10:00 — 19:00, tutti i giorni (picco 12:00 — 18:00 weekend)'
+    },
     orari: {
       fasce: [
         { da: '22:00', a: '06:00', giorni: 'Tutti i giorni', livello: 3, nota: 'Vicoli isolati e zone turistiche deserte.' },
-        { da: '23:00', a: '03:00', giorni: 'Ven — Dom', livello: 4, nota: 'Movida in Brera e zona Duomo: furti e rapine.' }
+        { da: '23:00', a: '03:00', giorni: 'Ven — Dom', livello: 4, nota: 'Movida in Brera e zona Duomo: furti e rapine.' },
+        { da: '10:00', a: '19:00', giorni: 'Sab — Dom', livello: 4, nota: 'Duomo e Castello: borseggiatrici tra la folla turistica.' }
       ],
       preferibile: '08:00 — 20:00, giorni feriali'
     }
@@ -51,14 +57,19 @@ const MUNICIPI_DATA = {
   2: {
     risk: 4,
     crimes: {
-      furti: { level: 4, desc: 'Alto tasso di furti con strappo vicino a Stazione Centrale e Corso Buenos Aires.' },
+      furti: { level: 4, desc: 'Alto tasso di furti con strappo e borseggio. Borseggiatrici attive in Stazione Centrale (piazza, binari e sottopassaggi) e su Corso Buenos Aires.' },
       rapine: { level: 5, desc: 'Milano è 1ª in Italia per rapine in pubblica via. Stazione Centrale e Corso Como sono hotspot.' },
       spaccio: { level: 4, desc: 'Spaccio attivo in zone limitrofe alla stazione e nella movida di Corso Como.' },
       violenza: { level: 4, desc: 'Violenze sessuali e aggressioni elevate in zona stazione e nightlife.' },
       danneggiamenti: { level: 3, desc: 'Danneggiamenti frequenti in aree di passaggio.' },
       truffe: { level: 3, desc: 'Truffe a viaggiatori e furti in hotel/hostel.' }
     },
-    tips: 'Massima cautela in Stazione Centrale, Piazzale Loreto e Corso Como dopo le 22. Non mostrare oggetti di valore.',
+    tips: 'Borseggiatrici in Stazione Centrale: tenere borsa e zaino davanti, attenzione in coda ai binari e nei sottopassaggi. Massima cautela dopo le 22 in tutta la zona.',
+    borseggiatrici: {
+      zone: ['Stazione Centrale — Piazza Duca d\'Aosta', 'Stazione Centrale — Binari e sottopassaggi'],
+      nota: 'Borseggiatrici e gruppi di scippatori puntano viaggiatori distratti con bagagli, al telefono o in attesa del treno.',
+      orari: '06:00 — 22:00, tutti i giorni (picco 07:00 — 10:00 e 17:00 — 20:00)'
+    },
     orari: {
       fasce: [
         { da: '21:00', a: '06:00', giorni: 'Tutti i giorni', livello: 5, nota: 'Stazione Centrale e Piazzale Loreto: rapine e aggressioni.' },
@@ -211,11 +222,17 @@ const HOTSPOTS = [
     lng: 9.2041,
     risk: 5,
     crimes: ['rapine', 'furti', 'violenza', 'spaccio'],
-    desc: 'Hotspot nazionale per rapine in pubblica via, scippi e violenze sessuali. Zona ad altissimo flusso turistico e transito.',
+    desc: 'Hotspot nazionale per rapine, scippi e violenze sessuali. Presenza costante di borseggiatrici in piazza, ai binari e nei sottopassaggi.',
+    borseggiatrici: {
+      zone: ['Piazza Duca d\'Aosta', 'Sottopassaggi e scale mobili', 'Coda ai binari'],
+      nota: 'Borseggiatrici in gruppo: una distrae, l\'altra apre borse e zaini. Attenzione con bagagli e mentre si controlla il telefono.',
+      orari: '06:00 — 22:00, tutti i giorni'
+    },
     orari: {
       fasce: [
         { da: '20:00', a: '06:00', giorni: 'Tutti i giorni', livello: 5, nota: 'Piazza Duca d\'Aosta e sottopassaggi: evitare assolutamente.' },
-        { da: '06:00', a: '09:00', giorni: 'Tutti i giorni', livello: 4, nota: 'Orario mattutino: furti a viaggiatori assonnati.' }
+        { da: '06:00', a: '09:00', giorni: 'Tutti i giorni', livello: 4, nota: 'Orario mattutino: borseggiatrici e furti a viaggiatori assonnati.' },
+        { da: '07:00', a: '10:00', giorni: 'Lun — Ven', livello: 4, nota: 'Picco borseggiatrici: ora di punta mattutina.' }
       ],
       preferibile: '09:00 — 18:00, giorni feriali'
     }
@@ -347,13 +364,40 @@ const HOTSPOTS = [
     lng: 9.1919,
     risk: 3,
     crimes: ['furti', 'truffe', 'rapine'],
-    desc: 'Epicentro turistico: furti con destrezza, truffe ai turisti e rapine occasionali.',
+    desc: 'Epicentro turistico con borseggiatrici attive in Piazza Duomo, Galleria Vittorio Emanuele e nei pressi. Truffe ai turisti e rapine occasionali.',
+    borseggiatrici: {
+      zone: ['Piazza del Duomo', 'Galleria Vittorio Emanuele II', 'Via Dante — accesso alla Galleria'],
+      nota: 'Borseggiatrici sfruttano selfie, mappe e affollamento. Tecnica classica: distrazione di gruppo e apertura borsa o tasca posteriore.',
+      orari: '10:00 — 19:00, tutti i giorni (picco weekend 12:00 — 18:00)'
+    },
     orari: {
       fasce: [
         { da: '22:00', a: '06:00', giorni: 'Tutti i giorni', livello: 3, nota: 'Galleria e vicoli: furti e truffe ai turisti.' },
-        { da: '12:00', a: '18:00', giorni: 'Sab — Dom', livello: 3, nota: 'Affollamento turistico: massima attenzione a borse e telefoni.' }
+        { da: '12:00', a: '18:00', giorni: 'Sab — Dom', livello: 4, nota: 'Affollamento turistico: borseggiatrici molto attive.' }
       ],
       preferibile: '08:00 — 12:00, tutti i giorni'
+    }
+  },
+  {
+    id: 'castello-sforzesco',
+    name: 'Castello Sforzesco',
+    municipio: 1,
+    lat: 45.4705,
+    lng: 9.1793,
+    risk: 3,
+    crimes: ['furti', 'truffe'],
+    desc: 'Zona turistica con presenza di borseggiatrici nel parco, all\'ingresso del castello e lungo Via Dante. Furti con destrezza ai visitatori distatti.',
+    borseggiatrici: {
+      zone: ['Parco Sempione — ingresso castello', 'Piazzale del Castello', 'Via Dante'],
+      nota: 'Borseggiatrici approfittano di turisti che fotografano il castello o consultano mappe. Attenzione a borse appoggiate e tasche posteriori.',
+      orari: '10:00 — 18:00, tutti i giorni (picco Sab — Dom)'
+    },
+    orari: {
+      fasce: [
+        { da: '12:00', a: '18:00', giorni: 'Sab — Dom', livello: 4, nota: 'Weekend: borseggiatrici tra turisti nel parco e all\'ingresso.' },
+        { da: '10:00', a: '17:00', giorni: 'Lun — Ven', livello: 3, nota: 'Giorni feriali: furti con destrezza a visitatori.' }
+      ],
+      preferibile: '08:00 — 10:00, tutti i giorni'
     }
   },
   {
